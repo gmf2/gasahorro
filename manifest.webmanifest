@@ -1,0 +1,14 @@
+{
+  "name": "GasOLE - Gasolina barata cerca",
+  "short_name": "GasOLE",
+  "description": "La gasolinera que de verdad te ahorra dinero: precio oficial y ahorro neto con el viaje incluido.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0e11",
+  "theme_color": "#0b0e11",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
