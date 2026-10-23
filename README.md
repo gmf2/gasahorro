@@ -1,4 +1,4 @@
-# GasOLE ⛽
+# GasAhorro ⛽
 
 La gasolinera más barata cerca de ti, ordenada por **ahorro real**: precio oficial menos lo que gastas en llegar.
 

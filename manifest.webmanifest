@@ -1,6 +1,6 @@
 {
-  "name": "GasOLE - Gasolina barata cerca",
-  "short_name": "GasOLE",
+  "name": "GasAhorro - Gasolina barata cerca",
+  "short_name": "GasAhorro",
   "description": "La gasolinera que de verdad te ahorra dinero: precio oficial y ahorro neto con el viaje incluido.",
   "start_url": "./",
   "scope": "./",
