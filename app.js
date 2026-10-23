@@ -12,7 +12,7 @@ const FUELS = [
 ];
 const RADII = [5, 10, 25];
 const SORTS = [
-  { code: "net",   name: "💰 Ahorro neto" },
+  { code: "net",   name: "Ahorro neto" },
   { code: "price", name: "Precio" },
   { code: "dist",  name: "Distancia" },
 ];
@@ -226,15 +226,15 @@ $("tabMap").onclick = () => { $("tabMap").classList.add("active"); $("tabList").
 /* ---- ubicación ---- */
 function setPos(lat, lon, label) {
   state.lat = lat; state.lon = lon;
-  $("updated").innerHTML = (state.data ? "Precios del " + esc(state.data.updated.split(" ")[0]) : "") + (label ? "<br>📍 " + esc(label) : "");
+  $("updated").innerHTML = (state.data ? "Precios del " + esc(state.data.updated.split(" ")[0]) : "") + (label ? "<br>" + esc(label) : "");
   compute();
 }
 $("locate").onclick = () => {
   const b = $("locate");
   b.innerHTML = '<span class="spin"></span>Localizando…';
   navigator.geolocation.getCurrentPosition(
-    p => { b.innerHTML = "📍 Usar mi ubicación"; setPos(p.coords.latitude, p.coords.longitude, "tu ubicación"); },
-    () => { b.innerHTML = "📍 Usar mi ubicación"; $("empty").hidden = false; $("empty").innerHTML = "No pude obtener tu ubicación.<br>Escribe tu ciudad o código postal arriba."; },
+    p => { b.innerHTML = "Usar mi ubicación"; setPos(p.coords.latitude, p.coords.longitude, "tu ubicación"); },
+    () => { b.innerHTML = "Usar mi ubicación"; $("empty").hidden = false; $("empty").innerHTML = "No pude obtener tu ubicación.<br>Escribe tu ciudad o código postal arriba."; },
     { enableHighAccuracy: true, timeout: 12000, maximumAge: 300000 }
   );
 };
@@ -274,7 +274,7 @@ $("place").addEventListener("keydown", e => { if (e.key === "Enter") doSearch();
   if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !navigator.standalone) {
     const d = document.createElement("div");
     d.className = "installhint";
-    d.innerHTML = "📲 Instálala: <b>Compartir</b> → <b>Añadir a pantalla de inicio</b>";
+    d.innerHTML = "Instálala en tu iPhone: <b>Compartir</b> → <b>Añadir a pantalla de inicio</b>";
     document.querySelector(".hero").appendChild(d);
   }
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
