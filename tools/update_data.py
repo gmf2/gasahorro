@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Download MITERD fuel prices and write a compact data/stations.json."""
-import json, urllib.request, datetime
+import json, time, urllib.request, datetime
 
 URL = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/"
 
@@ -14,6 +14,23 @@ FUELS = {
     "gnc":  "Precio Gas Natural Comprimido",
 }
 
+def fetch(url, attempts=4):
+    last = None
+    for i in range(attempts):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
+            with urllib.request.urlopen(req, timeout=240) as r:
+                raw = json.load(r)
+            if "ListaEESSPrecio" not in raw or len(raw["ListaEESSPrecio"]) < 10000:
+                raise ValueError("respuesta inesperada o incompleta del Ministerio")
+            return raw
+        except Exception as e:  # red, HTTP 5xx, JSON invalido, respuesta incompleta
+            last = e
+            wait = 15 * (2 ** i)
+            print(f"intento {i+1}/{attempts} fallido: {e}; reintento en {wait}s", flush=True)
+            time.sleep(wait)
+    raise last
+
 def fnum(s):
     if not s: return None
     try: return float(s.replace(",", "."))
@@ -23,9 +40,7 @@ def fcoord(s):
     try: return round(float(s.replace(",", ".")), 6)
     except (ValueError, AttributeError): return None
 
-req = urllib.request.Request(URL, headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
-with urllib.request.urlopen(req, timeout=120) as r:
-    raw = json.load(r)
+raw = fetch(URL)
 
 out = []
 for s in raw["ListaEESSPrecio"]:
