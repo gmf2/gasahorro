@@ -228,7 +228,7 @@ function stamp() {
   if (!state.data) return "";
   const [d, t] = state.data.updated.split(" ");
   const [dd, mm] = d.split("/");
-  return "Precios oficiales de<br>" + dd + "/" + mm + (t ? " a las " + t.slice(0, 5) : "");
+  return "Precios oficiales de<br>" + dd + "/" + mm + (t ? " a las " + t.split(":").slice(0, 2).map(x => x.padStart(2, "0")).join(":") : "");
 }
 function setPos(lat, lon, label) {
   state.lat = lat; state.lon = lon;
