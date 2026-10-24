@@ -224,9 +224,15 @@ $("tabList").onclick = () => { $("tabList").classList.add("active"); $("tabMap")
 $("tabMap").onclick = () => { $("tabMap").classList.add("active"); $("tabList").classList.remove("active"); $("list").hidden = true; $("mapwrap").hidden = false; if (!map) initMap(); setTimeout(() => { map.invalidateSize(); drawMap(state.results); }, 60); };
 
 /* ---- ubicación ---- */
+function stamp() {
+  if (!state.data) return "";
+  const [d, t] = state.data.updated.split(" ");
+  const [dd, mm] = d.split("/");
+  return "Precios oficiales de<br>" + dd + "/" + mm + (t ? " a las " + t.slice(0, 5) : "");
+}
 function setPos(lat, lon, label) {
   state.lat = lat; state.lon = lon;
-  $("updated").innerHTML = (state.data ? "Precios del " + esc(state.data.updated.split(" ")[0]) : "") + (label ? "<br>" + esc(label) : "");
+  $("updated").innerHTML = stamp() + (label ? "<br>" + esc(label) : "");
   compute();
 }
 $("locate").onclick = () => {
@@ -257,7 +263,7 @@ $("place").addEventListener("keydown", e => { if (e.key === "Enter") doSearch();
   renderControls();
   try {
     state.data = await loadData();
-    $("updated").textContent = "Precios del " + state.data.updated.split(" ")[0];
+    $("updated").innerHTML = stamp();
   } catch (e) {
     $("empty").hidden = false;
     $("empty").textContent = "No pude cargar los precios. Revisa tu conexión y recarga.";
