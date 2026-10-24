@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Download MITERD fuel prices and write a compact data/stations.json."""
-import json, time, urllib.request, datetime
+import json, time, subprocess, urllib.request, datetime
 
 URL = "https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/"
 
@@ -14,21 +14,35 @@ FUELS = {
     "gnc":  "Precio Gas Natural Comprimido",
 }
 
-def fetch(url, attempts=4):
+UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+
+def get_curl(url):
+    out = subprocess.run(["curl", "-sS", "--fail", "--http1.1", "--compressed", "-m", "180", "--retry", "2",
+                          "-H", "User-Agent: " + UA, "-H", "Accept: application/json, text/plain, */*",
+                          "-H", "Accept-Language: es-ES,es;q=0.9", url],
+                         capture_output=True, check=True, timeout=400)
+    return json.loads(out.stdout)
+
+def get_urllib(url):
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
+    with urllib.request.urlopen(req, timeout=180) as r:
+        return json.load(r)
+
+def fetch(url, rounds=3):
     last = None
-    for i in range(attempts):
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
-            with urllib.request.urlopen(req, timeout=240) as r:
-                raw = json.load(r)
-            if "ListaEESSPrecio" not in raw or len(raw["ListaEESSPrecio"]) < 10000:
-                raise ValueError("respuesta inesperada o incompleta del Ministerio")
-            return raw
-        except Exception as e:  # red, HTTP 5xx, JSON invalido, respuesta incompleta
-            last = e
-            wait = 15 * (2 ** i)
-            print(f"intento {i+1}/{attempts} fallido: {e}; reintento en {wait}s", flush=True)
-            time.sleep(wait)
+    for i in range(rounds):
+        for name, fn in (("curl", get_curl), ("urllib", get_urllib)):
+            try:
+                raw = fn(url)
+                if "ListaEESSPrecio" not in raw or len(raw["ListaEESSPrecio"]) < 10000:
+                    raise ValueError("respuesta inesperada o incompleta del Ministerio")
+                print(f"descarga ok con {name}", flush=True)
+                return raw
+            except Exception as e:
+                last = e
+                detail = getattr(e, "stderr", b"")
+                print(f"ronda {i+1}/{rounds} {name} fallido: {e} {detail[-200:] if detail else ''}", flush=True)
+        time.sleep(20 * (i + 1))
     raise last
 
 def fnum(s):
